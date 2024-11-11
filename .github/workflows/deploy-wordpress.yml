@@ -1,0 +1,43 @@
+name: Github Actions workflow for deployment wordpress on k3s cluster
+on:
+  workflow_dispatch
+
+jobs: 
+  deploy-wordpress:
+    name: Deploy wordpress job
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./wordpress
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH keys and known hosts
+        env:
+          SSH_PRIVATE_KEY_BASION: ${{ secrets.SSH_PRIVATE_KEY_BASION }}
+          SSH_PRIVATE_KEY_MAIN_NODE: ${{ secrets.SSH_PRIVATE_KEY_MAIN_NODE }}
+        run: |
+          # Create SSH directory and private key file
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY_BASION" > ~/.ssh/id_rsa_bastion
+          echo "$SSH_PRIVATE_KEY_MAIN_NODE" > ~/.ssh/id_rsa_main_node
+          chmod 600 ~/.ssh/id_rsa_bastion
+          chmod 600 ~/.ssh/id_rsa_main_node
+
+          # Disable strict host checking to avoid interactive prompt
+          echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+
+      - name: Connect and execute script on remote host via jump host
+        env:
+          SSH_IP_BASTION: ${{ secrets.SSH_IP_BASTION }}
+          SSH_USER_BASTION: ${{ secrets.SSH_USER_BASTION }}
+          SSH_IP_MAIN_NODE: ${{ secrets.SSH_IP_MAIN_NODE }}
+          SSH_USER_MAIN_NODE: ${{ secrets.SSH_USER_MAIN_NODE }}
+          REMOTE_SCRIPT: ${{ secrets.REMOTE_SCRIPT }}
+        run: |
+          # Create ProxyCommand to connect through jump host using the SSH key
+          PROXY_CMD="ssh -i ~/.ssh/id_rsa_bastion -o StrictHostKeyChecking=no -W %h:%p $SSH_USER_BASTION@$SSH_IP_BASTION"
+
+          # Use ProxyCommand to connect to the remote host through the jump host and execute the remote script
+          ssh -i ~/.ssh/id_rsa_main_node -o ProxyCommand="$PROXY_CMD" $SSH_USER_MAIN_NODE@$SSH_IP_MAIN_NODE "$REMOTE_SCRIPT"
