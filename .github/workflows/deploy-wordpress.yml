@@ -2,13 +2,10 @@ name: Github Actions workflow for deployment wordpress on k3s cluster
 on:
   workflow_dispatch
 
-jobs: 
+jobs:
   deploy-wordpress:
     name: Deploy wordpress job
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./wordpress
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,7 +35,7 @@ jobs:
           # Create ProxyCommand to connect through jump host using the SSH key
           PROXY_CMD="ssh -i ~/.ssh/id_rsa_bastion -o StrictHostKeyChecking=no -W %h:%p $SSH_USER_BASTION@$SSH_IP_BASTION"
           
-          scp -i ~/.ssh/id_rsa_main_node -r -o ProxyCommand="$PROXY_CMD" "${PWD}" $SSH_USER_MAIN_NODE@$SSH_IP_MAIN_NODE:/home/ec2-user/wordpress-chart/
+          scp -i ~/.ssh/id_rsa_main_node -r -o ProxyCommand="$PROXY_CMD" "${PWD}/wordpress/" $SSH_USER_MAIN_NODE@$SSH_IP_MAIN_NODE:/home/ec2-user/wordpress-chart/
 
           # Use ProxyCommand to connect to the remote host through the jump host and execute the remote script
           ssh -i ~/.ssh/id_rsa_main_node -o ProxyCommand="$PROXY_CMD" $SSH_USER_MAIN_NODE@$SSH_IP_MAIN_NODE "sudo mv /home/ec2-user/wordpress-chart/ /root/wordpress-chart/ && chmod -R +x /root/wordpress-chart/deploy_wordpress.sh && sudo /root/wordpress-chart/deploy_wordpress.sh"
