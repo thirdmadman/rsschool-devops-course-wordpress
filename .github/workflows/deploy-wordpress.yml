@@ -38,7 +38,7 @@ jobs:
           # Create ProxyCommand to connect through jump host using the SSH key
           PROXY_CMD="ssh -i ~/.ssh/id_rsa_bastion -o StrictHostKeyChecking=no -W %h:%p $SSH_USER_BASTION@$SSH_IP_BASTION"
           
-          scp -i ~/.ssh/id_rsa_main_node -r -o ProxyCommand="$PROXY_CMD" ./ $SSH_USER_MAIN_NODE@$SSH_IP_MAIN_NODE:/root/wordpress-chart/
+          scp -i ~/.ssh/id_rsa_main_node -r -o ProxyCommand="$PROXY_CMD" "${PWD}" $SSH_USER_MAIN_NODE@$SSH_IP_MAIN_NODE:/root/wordpress-chart/
 
           # Use ProxyCommand to connect to the remote host through the jump host and execute the remote script
           ssh -i ~/.ssh/id_rsa_main_node -o ProxyCommand="$PROXY_CMD" $SSH_USER_MAIN_NODE@$SSH_IP_MAIN_NODE "chmod +x /path/to/script.sh && sudo /root/wordpress-chart/deploy_wordpress.sh"
