@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo cat 'Sure this works' >> /root/test.txt
+echo 'Sure this works' >> /root/test.txt
