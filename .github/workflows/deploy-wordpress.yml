@@ -6,9 +6,9 @@ jobs:
   deploy-wordpress:
     name: Deploy wordpress job
     runs-on: ubuntu-latest
-    # defaults:
-    #   run:
-    #     working-directory: ./wordpress
+    defaults:
+      run:
+        working-directory: ./wordpress
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
