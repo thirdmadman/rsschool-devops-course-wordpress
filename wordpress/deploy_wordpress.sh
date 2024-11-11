@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo 'Sure this works' >> /root/test.txt
+helm install my-release /root/wordpress-chart

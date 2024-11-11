@@ -1,0 +1,32 @@
+wordpress:
+  image: wordpress:6.6.2-php8.1-apache
+  replicaCount: 1
+  service:
+    type: NodePort
+    port: 80
+    nodePort: 32000
+  resources:
+    requests:
+      memory: '128Mi'
+      cpu: '250m'
+  env:
+    WORDPRESS_DB_HOST: mysql
+    WORDPRESS_DB_USER: wordpress
+    WORDPRESS_DB_PASSWORD: wordpresspass
+    WORDPRESS_DB_NAME: wordpress
+
+mysql:
+  image: mysql:8.0
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 3306
+  resources:
+    requests:
+      memory: '128Mi'
+      cpu: '250m'
+  env:
+    MYSQL_ROOT_PASSWORD: rootpassword
+    MYSQL_DATABASE: wordpress
+    MYSQL_USER: wordpress
+    MYSQL_PASSWORD: wordpresspass
