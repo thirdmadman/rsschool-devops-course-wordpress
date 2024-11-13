@@ -12,12 +12,43 @@ To deploy WordPress with this repo on your cluster, you need to have a running c
 
 - 1x bastion/nat host in public subnet
 - 1x main node with K3S cluster in private subnet
+- Kubernetes 1.23+ on main node with K3S cluster
+- Helm 3.8.0+ on main node with K3S cluster
 
 Also you need to have a private keys for the bastion host and the main node, user names for this keys and public IP address of bastion/nat and private IP address of main node.
 
-### Installing
+### Installing manually
 
-### Prepare the environment
+#### Connect to main node
+
+To install this chart on your Kubernetes cluster with helm, you need to connect to the main node of the cluster using ssh via basion/nat instance.
+
+To do this use following command on Linux machine:
+```bash
+ssh -A -J ec2-user@<ec2_nat_gw_instance_public_ip> ec2-user@<ec2_k3s_main_instance_private_ip>
+```
+
+Same exact command can be used in Windows machine via XSHELL (free for personal use).
+
+#### Clone the repository
+
+To clone the repository, run the following command:
+```bash
+git clone https://github.com/USERNAME/REPOSITORY.git
+```
+
+Navigate to the cloned repository directory and run the following commands:
+
+```bash
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+helm install my-wp-release ./wordpress
+```
+
+This will install the Wordpress Helm chart and mark it's as my-wp-release in helm.
+
+### Installing via CI/CD
+
+#### Prepare the environment
 
 To install the software part of task5, follow these steps:
 
